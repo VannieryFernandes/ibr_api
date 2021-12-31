@@ -30,8 +30,6 @@ Acessar documentação Swagger no navegador: [http://localhost:8000/docs].
 ├── main.py
 ├── .env.example
 ├── .gitignore
-├── package.json
-├── package-lock.json
 ├── Pipfile
 ├── Pipfile.lock
 ├── README.md

@@ -8,5 +8,9 @@ name = "pypi"
 [requires]
 python_version = "3.7"
 
+[packages]
+python-dotenv = "*"
+pymongo = "*"
+
 [packages.fastapi]
 extras = [ "all",]
