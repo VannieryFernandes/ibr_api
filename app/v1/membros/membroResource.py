@@ -2,14 +2,18 @@
 from fastapi import APIRouter
 from app.v1.db import db
 from app.v1.membros.membroModel import Membro
+from typing import List
 
 router = APIRouter(prefix="/membros",tags=["Membros"])
 
 
 @router.get('')
-async def listar_membros():
+async def listar_membros(*, offset: int = 1, limit: int = 100):
+
     membros = []
-    for membro in db.membros.find():
+    offset = (offset-1) * limit
+
+    for membro in db.membros.find().skip(offset).limit(limit):
         membros.append(Membro(**membro))
     return {'membros': membros}
 
