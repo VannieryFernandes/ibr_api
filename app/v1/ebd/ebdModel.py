@@ -41,3 +41,17 @@ class EBD(BaseModel):
         json_encoders = {
             ObjectId: str
         }
+
+class EBDUpdate(BaseModel):
+    usuario: Optional[str]
+    id_membro: Optional[str]
+    presenca: Optional[bool]
+    data_escola : Optional[str]
+    numero_biblia : Optional[int]
+    turma: Optional[Classes]
+    class Config:
+        arbitrary_types_allowed = True
+        use_enum_values = True
+        json_encoders = {
+            ObjectId: str
+        }

@@ -25,7 +25,7 @@ class Membro(BaseModel):
     email: EmailStr
     nome_completo: str
     usuario: str
-    data_de_nascimento: datetime
+    data_de_nascimento: str = 'yyyy-mm-dd'
     cpf: Optional[str]
     nacionalidade: Optional[str]
     natural: Optional[str]
@@ -34,8 +34,8 @@ class Membro(BaseModel):
     filiacao_mae:Optional[str]
     #dados cristao
     igreja:Optional[str]
-    data_conversao:Optional[datetime]
-    data_batismo:Optional[datetime]
+    data_conversao:Optional[str] = 'yyyy-mm-dd'
+    data_batismo:Optional[str] = 'yyyy-mm-dd'
     ebd: bool = False
     membro: bool = False
     ministerio: Optional[str]
@@ -46,3 +46,30 @@ class Membro(BaseModel):
         json_encoders = {
             ObjectId: str
         }
+
+class MembroUpdate(BaseModel):
+    email: Optional[EmailStr]
+    nome_completo: Optional[str]
+    usuario: Optional[str]
+    data_de_nascimento: Optional[str]
+    cpf: Optional[str]
+    nacionalidade: Optional[str]
+    natural: Optional[str]
+    estado_civil: Optional[str]
+    filiacao_pai:Optional[str]
+    filiacao_mae:Optional[str]
+    #dados cristao
+    igreja:Optional[str]
+    data_conversao:Optional[str]
+    data_batismo:Optional[str]
+    ebd: Optional[bool]
+    membro: Optional[bool]
+    ministerio: Optional[str]
+
+
+    class Config:
+        arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId: str
+        }
+
