@@ -1,20 +1,24 @@
 
 from fastapi import APIRouter,Body
-from starlette.types import Message
+from typing import Optional
 from app.v1.db import db
 from app.v1.ebd.ebdModel import EBD, EBDUpdate
 from bson.objectid import ObjectId
-import json
+
 
 router = APIRouter(prefix="/ebd",tags=["EBD"])
 
 
 @router.get('')
-async def listar_leituras(*, offset: int = 1, limit: int = 100):
+async def listar_leituras(*, offset: int = 1, limit: int = 100,data_ebd:Optional[str]=None):
     ''' Descrição: Endpoint responsável por listar a leitura bíblica de cada membro por data \n'''
     offset = (offset-1) * limit
     leituras = []
-    for membro in db.escola_biblica.find().skip(offset).limit(limit):
+    filters = dict()
+    if(data_ebd):filters.update({"data_escola":data_ebd})
+
+    query = db.escola_biblica.find(filters).skip(offset).limit(limit)
+    for membro in query:
         leituras.append(EBD(**membro))
     return {'leituras': leituras}
 

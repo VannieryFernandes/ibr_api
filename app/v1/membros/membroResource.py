@@ -3,17 +3,24 @@ from fastapi import APIRouter,Body
 from app.v1.db import db
 from app.v1.membros.membroModel import Membro, MembroUpdate
 from bson.objectid import ObjectId
+from typing import Optional
 
 router = APIRouter(prefix="/membros",tags=["Membros"])
 
 
 @router.get('')
-async def listar_membros(*, offset: int = 1, limit: int = 100):
+async def listar_membros(*, offset: int = 1, limit: int = 100,email:Optional[str]=None,matriculado:bool = None,membro:bool=None):
 
     membros = []
     offset = (offset-1) * limit
+    filters = dict()
+    if(email): filters.update({"email":email})
+    if(matriculado is not None): filters.update({"ebd":matriculado})
+    if(membro is not None): filters.update({"membro":membro})
 
-    for membro in db.membros.find().skip(offset).limit(limit):
+        
+    query = db.membros.find(filters).skip(offset).limit(limit)
+    for membro in query:
         membros.append(Membro(**membro))
     return {'membros': membros}
 

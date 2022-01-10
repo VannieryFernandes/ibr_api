@@ -4,9 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Sistema Dominical",description="API para EBD")
 
-origins = [
-    "*",
-    "http://ibdominical.herokuapp.com"]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,7 +13,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
     
 @app.get("/")
