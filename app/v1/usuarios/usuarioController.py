@@ -27,8 +27,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="token",
-    scopes={"usuarios": "Listar todos os usuarios.", "membros": "Listar todos os membros."},
+    tokenUrl="/v1/usuarios/login"
 )
 
 
@@ -43,7 +42,7 @@ def get_password_hash(password):
 
 def get_user(email: str):
     user_dict = db.usuarios.find_one({"email":email})
-    if email in user_dict:
+    if user_dict['email']:
         return UsuarioEmBanco(**user_dict)
 
 
@@ -68,46 +67,40 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-async def get_current_user(
-    security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)
-):
-    if security_scopes.scopes:
-        authenticate_value = f'Bearer scope="{security_scopes.scope_str}"'
-    else:
-        authenticate_value = f"Bearer"
+async def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Credenciais inválidas",
-        headers={"WWW-Authenticate": authenticate_value},
+        detail="Credenciais Inválidas",
+        headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        user = get_user(email=email)
+        email: str = payload.get("email")
         if email is None:
             raise credentials_exception
-        # token_scopes = payload.get("scopes", [])
-        token_data = TokenData(escopos=user.escopos, email=email)
-    except (JWTError, ValidationError):
+        token_data = TokenData(email=email)
+    except JWTError:
         raise credentials_exception
     
-    
+    user = get_user(email=token_data.email)
     if user is None:
         raise credentials_exception
-    for scope in security_scopes.scopes:
-        if scope not in token_data.escopos:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Você não tem permissão",
-                headers={"WWW-Authenticate": authenticate_value},
-            )
     return user
+        
 
-
-async def get_current_active_user(
-    current_user: Usuario = Security(get_current_user, scopes=["usuarios"])
-):
-    if current_user.disabilitado:
+async def get_current_active_user(current_user: Usuario = Depends(get_current_user)):
+    if current_user.ativo==False:
         raise HTTPException(status_code=400, detail="Usuario Inativo")
+    
     return current_user
+
+async def tem_permissao(current_user:Usuario,permissao:str=None):
+    if(current_user.admin==True):
+        return True
+    elif(permissao not in current_user.escopos):
+        raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Não tem permissão"
+                )
+    
+    

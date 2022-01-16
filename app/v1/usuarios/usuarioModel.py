@@ -29,8 +29,6 @@ class Usuario(BaseModel):
     ativo: bool = False
     admin:bool = False
     escopos:List[str]
-    disabilitado:bool=False
-    
 
 
     class Config:
@@ -47,7 +45,6 @@ class UsuarioUpdate(BaseModel):
     data_criacao:Optional[datetime] 
     ativo: Optional[bool]
     admin: Optional[bool]
-    disabilitado: Optional[bool]
     escopos:Optional[List[str]]
 
     class Config:
@@ -59,18 +56,16 @@ class UsuarioUpdate(BaseModel):
 #Relativo a autenticação
 
 class UsuarioEmBanco(Usuario):
+    email:EmailStr
     senha: str
+
 
 class Token(BaseModel):
     access_token: str
     token_type: str
 
 
-class TokenData(Usuario):
+class TokenData(BaseModel):
     email: Optional[str] = None
-    escopos: List[str] = []
+    
 
-
-
-class UsuarioNoBanco(Usuario):
-    senha: str
