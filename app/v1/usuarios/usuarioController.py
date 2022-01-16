@@ -42,8 +42,9 @@ def get_password_hash(password):
 
 def get_user(email: str):
     user_dict = db.usuarios.find_one({"email":email})
-    if user_dict['email']:
+    if user_dict and 'email' in user_dict:
         return UsuarioEmBanco(**user_dict)
+    return False
 
 
 
