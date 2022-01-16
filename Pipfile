@@ -11,6 +11,13 @@ python_version = "3.7"
 [packages]
 python-dotenv = "*"
 pymongo = "*"
+python-multipart = "*"
 
 [packages.fastapi]
 extras = [ "all",]
+
+[packages.python-jose]
+extras = [ "cryptography",]
+
+[packages.passlib]
+extras = [ "bcrypt",]
