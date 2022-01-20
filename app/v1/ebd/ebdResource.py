@@ -63,3 +63,22 @@ async def atualizar_leitura(id: str, membro: EBDUpdate=Body(...)):
     else:
         return {"message":"Não existe essa leitura"}
 
+@router.get('/leituras-sumarizadas')
+async def listar_sumarizado(*,data_ebd:Optional[str]=None,turma:Optional[str]=None):
+    ''' Descrição: Endpoint responsável por relatório da EBD por data \n'''
+
+
+    filters = dict()
+    if(data_ebd):filters.update({"data_escola":data_ebd})
+    if(turma):filters.update({"turma":turma})
+    matriculados = db.escola_biblica.count_documents(filters)
+    filters.update({'presenca':False})
+    ausentes = db.escola_biblica.count_documents(filters)
+    filters.update({'presenca':True})
+    presentes = db.escola_biblica.count_documents(filters)
+    # filters.update({ 'numero_biblia': { '$gt': 0 } })
+    # capitulos_lidos = db.escola_biblica.find(filters)
+    # print(query)
+    # for membro in query:
+    #     leituras.append(EBD(**membro))
+    return {'matriculados': matriculados,'presentes':presentes,'ausentes':ausentes}
