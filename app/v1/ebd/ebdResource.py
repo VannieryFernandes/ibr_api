@@ -76,9 +76,13 @@ async def listar_sumarizado(*,data_ebd:Optional[str]=None,turma:Optional[str]=No
     ausentes = db.escola_biblica.count_documents(filters)
     filters.update({'presenca':True})
     presentes = db.escola_biblica.count_documents(filters)
-    # filters.update({ 'numero_biblia': { '$gt': 0 } })
+    capitulos_lidos = 100
+    filters.update({'visitante':True})
+    visitantes = db.escola_biblica.count_documents(filters)
+    
+   # filters.update({ 'numero_biblia': { '$gt': 0 } })
     # capitulos_lidos = db.escola_biblica.find(filters)
     # print(query)
     # for membro in query:
     #     leituras.append(EBD(**membro))
-    return {'matriculados': matriculados,'presentes':presentes,'ausentes':ausentes}
+    return {'matriculados': matriculados,'presentes':presentes,'ausentes':ausentes,'visitantes':visitantes,'assistencia_total':presentes+visitantes,'capitulos_lidos':capitulos_lidos}
