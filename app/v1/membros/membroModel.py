@@ -39,6 +39,7 @@ class Membro(BaseModel):
     ebd: bool = False
     membro: bool = False
     ministerio: Optional[str]
+    tipo_sanguineo: Optional[str]
 
 
     class Config:
@@ -65,6 +66,7 @@ class MembroUpdate(BaseModel):
     ebd: Optional[bool]
     membro: Optional[bool]
     ministerio: Optional[str]
+    tipo_sanguineo: Optional[str]
 
 
     class Config:

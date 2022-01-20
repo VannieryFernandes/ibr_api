@@ -52,6 +52,7 @@ async def atualizar_membro(id: str, membro: MembroUpdate=Body(...)):
     if membro.ebd : membro_update['ebd'] = membro.ebd
     if membro.membro : membro_update['membro'] = membro.membro
     if membro.ministerio : membro_update['ministerio'] = membro.ministerio
+    if membro.tipo_sanguineo : membro_update['tipo_sanguineo'] = membro.tipo_sanguineo
 
 
     find_membro =  db.membros.find_one({"_id": ObjectId(id)})
