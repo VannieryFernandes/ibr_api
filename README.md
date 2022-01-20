@@ -11,7 +11,7 @@ Usamos Pipenv para gerenciar bibliotecas e criar enviroments
 ```
 1. $ git clone https://github.com/VannieryFernandes/ibr_api.git
 
-2. $ cd api_clients
+2. $ cd ibr_api
 
 3. $ pipenv install
 
