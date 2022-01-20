@@ -1,7 +1,7 @@
 ## Pré-requisitos para instalação:
 
 1. Criar uma enviroment python da versão 3.7 .
-2. Configuração correta no .env integrado ao banco de dados Postgresql 12
+2. Configuração correta no .env integrado ao banco de dados mongodb
 3. Criar banco no postgres igual definido no .env
 
 ## Baixar e Instalar as bibliotecas
