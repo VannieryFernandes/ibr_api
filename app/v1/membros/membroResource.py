@@ -1,7 +1,9 @@
 
-from fastapi import APIRouter,Body
+from fastapi import APIRouter,Body, Depends
 from app.v1.db import db
 from app.v1.membros.membroModel import Membro, MembroUpdate
+from app.v1.usuarios.usuarioController import get_current_active_user, tem_permissao
+from app.v1.usuarios.usuarioModel import Usuario
 from bson.objectid import ObjectId
 from typing import Optional
 
@@ -9,8 +11,8 @@ router = APIRouter(prefix="/membros",tags=["Membros"])
 
 
 @router.get('')
-async def listar_membros(*, offset: int = 1, limit: int = 100,email:Optional[str]=None,matriculado:bool = None,membro:bool=None):
-
+async def listar_membros(*, offset: int = 1, limit: int = 100,email:Optional[str]=None,matriculado:bool = None,membro:bool=None,current_user: Usuario = Depends(get_current_active_user)):
+    await tem_permissao(current_user,"membros:listar")
     membros = []
     offset = (offset-1) * limit
     filters = dict()
@@ -25,7 +27,8 @@ async def listar_membros(*, offset: int = 1, limit: int = 100,email:Optional[str
     return {'membros': membros}
 
 @router.post('/add')
-async def inserir_membro(membro: Membro):
+async def inserir_membro(membro: Membro,current_user: Usuario = Depends(get_current_active_user)):
+    await tem_permissao(current_user,"membros:adicionar")
     if hasattr(membro, 'id'):
         delattr(membro, 'id')
     ret = db.membros.insert_one(membro.dict(by_alias=True))
@@ -34,7 +37,8 @@ async def inserir_membro(membro: Membro):
 
 
 @router.put("/{id}")
-async def atualizar_membro(id: str, membro: MembroUpdate=Body(...)):
+async def atualizar_membro(id: str, membro: MembroUpdate=Body(...),current_user: Usuario = Depends(get_current_active_user)):
+    await tem_permissao(current_user,"membros:atualizar")
     membro_update = dict()
     if membro.email : membro_update['email'] = membro.email
     if membro.nome_completo : membro_update['nome_completo'] = membro.nome_completo

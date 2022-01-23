@@ -1,8 +1,10 @@
 
-from fastapi import APIRouter,Body
+from fastapi import APIRouter,Body, Depends
 from typing import Optional
 from app.v1.db import db
 from app.v1.ebd.ebdModel import EBD, EBDUpdate
+from app.v1.usuarios.usuarioController import get_current_active_user, tem_permissao
+from app.v1.usuarios.usuarioModel import Usuario
 from bson.objectid import ObjectId
 
 
@@ -10,7 +12,8 @@ router = APIRouter(prefix="/ebd",tags=["EBD"])
 
 
 @router.get('')
-async def listar_leituras(*, offset: int = 1, limit: int = 100,data_ebd:Optional[str]=None):
+async def listar_leituras(*, offset: int = 1, limit: int = 100,data_ebd:Optional[str]=None,current_user: Usuario = Depends(get_current_active_user)):
+    await tem_permissao(current_user,"ebd:listar")
     ''' Descrição: Endpoint responsável por listar a leitura bíblica de cada membro por data \n'''
     offset = (offset-1) * limit
     leituras = []
@@ -23,7 +26,8 @@ async def listar_leituras(*, offset: int = 1, limit: int = 100,data_ebd:Optional
     return {'leituras': leituras}
 
 @router.post('/add')
-async def inserir_leituras(membro: EBD):
+async def inserir_leituras(membro: EBD,current_user: Usuario = Depends(get_current_active_user)):
+    await tem_permissao(current_user,"ebd:adicionar")
     '''
     Descrição: Endpoint responsável por cadastrar a leitura bíblica semanal de cada membro \n
     Observações:\n
@@ -42,7 +46,8 @@ async def inserir_leituras(membro: EBD):
     return {'leituras': membro}
 
 @router.put("/{id}")
-async def atualizar_leitura(id: str, membro: EBDUpdate=Body(...)):
+async def atualizar_leitura(id: str, membro: EBDUpdate=Body(...),current_user: Usuario = Depends(get_current_active_user)):
+    await tem_permissao(current_user,"ebd:atualizar")
     membro_update = dict()
     if membro.turma : membro_update['turma'] = membro.turma
     if membro.presenca : membro_update['presenca'] = membro.presenca
@@ -64,7 +69,8 @@ async def atualizar_leitura(id: str, membro: EBDUpdate=Body(...)):
         return {"message":"Não existe essa leitura"}
 
 @router.get('/leituras-sumarizadas')
-async def listar_sumarizado(*,data_ebd:Optional[str]=None,turma:Optional[str]=None):
+async def listar_sumarizado(*,data_ebd:Optional[str]=None,turma:Optional[str]=None,current_user: Usuario = Depends(get_current_active_user)):
+    await tem_permissao(current_user,"ebd:listar")
     ''' Descrição: Endpoint responsável por relatório da EBD por data \n'''
 
 
