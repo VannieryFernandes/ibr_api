@@ -33,7 +33,7 @@ async def inserir_leituras(membro: EBD,current_user: Usuario = Depends(get_curre
     Observações:\n
     id_membros = é o _id do membro \n
     usuario = apelido do aluno \n
-    turma = descrita por 3 tipos: \n
+    turma = descrita por 4 tipos: \n
         -crianças
         -juniores
         -adolescentes

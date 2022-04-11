@@ -11,7 +11,7 @@ router = APIRouter(prefix="/membros",tags=["Membros"])
 
 
 @router.get('')
-async def listar_membros(*, offset: int = 1, limit: int = 100,email:Optional[str]=None,matriculado:bool = None,membro:bool=None,current_user: Usuario = Depends(get_current_active_user)):
+async def listar_membros(*, offset: int = 1, limit: int = 100,email:Optional[str]=None,turma:Optional[str]=None,matriculado:bool = None,membro:bool=None,current_user: Usuario = Depends(get_current_active_user)):
     await tem_permissao(current_user,"membros:listar")
     membros = []
     offset = (offset-1) * limit
@@ -19,6 +19,7 @@ async def listar_membros(*, offset: int = 1, limit: int = 100,email:Optional[str
     if(email): filters.update({"email":email})
     if(matriculado is not None): filters.update({"ebd":matriculado})
     if(membro is not None): filters.update({"membro":membro})
+    if(turma): filters.update({"turma":turma})
 
         
     query = db.membros.find(filters).skip(offset).limit(limit)
@@ -28,6 +29,14 @@ async def listar_membros(*, offset: int = 1, limit: int = 100,email:Optional[str
 
 @router.post('/add')
 async def inserir_membro(membro: Membro,current_user: Usuario = Depends(get_current_active_user)):
+    '''
+        Descrição: Endpoint responsável por inserir membro 
+        turma = descrita por 4 tipos: \n
+        -crianças
+        -juniores
+        -adolescentes
+        -adultos
+    '''
     await tem_permissao(current_user,"membros:adicionar")
     if hasattr(membro, 'id'):
         delattr(membro, 'id')
@@ -38,6 +47,15 @@ async def inserir_membro(membro: Membro,current_user: Usuario = Depends(get_curr
 
 @router.put("/{id}")
 async def atualizar_membro(id: str, membro: MembroUpdate=Body(...),current_user: Usuario = Depends(get_current_active_user)):
+
+    '''
+    Descrição: Endpoint responsável por atualizar membro por meio do ID
+    turma = descrita por 4 tipos: \n
+    -crianças
+    -juniores
+    -adolescentes
+    -adultos
+    '''
     await tem_permissao(current_user,"membros:atualizar")
     membro_update = dict()
     if membro.email : membro_update['email'] = membro.email
@@ -57,6 +75,8 @@ async def atualizar_membro(id: str, membro: MembroUpdate=Body(...),current_user:
     if membro.membro : membro_update['membro'] = membro.membro
     if membro.ministerio : membro_update['ministerio'] = membro.ministerio
     if membro.tipo_sanguineo : membro_update['tipo_sanguineo'] = membro.tipo_sanguineo
+    if membro.turma : membro_update['turma'] = membro.turma
+
 
 
     find_membro =  db.membros.find_one({"_id": ObjectId(id)})
